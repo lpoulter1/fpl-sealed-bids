@@ -1,24 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { type NextPage } from "next";
 import Head from "next/head";
-import dynamic from 'next/dynamic'
-import { useEffect, useState } from "react";
-
-const AblyChatComponent = dynamic(() => import('../components/AblyChatComponent'), { ssr: false });
-
+import axios from "axios";
+import { useQuery, useMutation } from "react-query";
 
 const Home: NextPage = () => {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    void fetch('/api/bidTracker').then(
-      (res) => res.json()
-    ).then(
-      (data: { count: number}) => {
-        if(!data) return;
-        setCount(data.count)
-      }
-    );
-  }, []);
-
   return (
     <>
       <Head>
@@ -27,20 +13,39 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        count: {count}
-        <BidPage />
-        <AblyChatComponent />
+        <Round />
 
+        <BidPage />
       </main>
     </>
   );
 };
 
+/**
+ * 1. get current round id on load
+ * 2. poll to find out how many other people have bid
+ * 2. allow user to enter a bid
+ * 3. submit bid passing bid amount and current round id and user id
+ * 4. when poll returns all bids are in show all bids.
+ * @returns
+ */
+
 function BidPage() {
+  // const currentRoundId = 1;
+  // const myBid = 0;
+
+  const mutation = useMutation({
+    mutationFn: (newBid) => {
+      return axios.post(`/api/bidTracker?id=1`, newBid);
+    },
+  });
+
   function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     console.log("bid amount", e.currentTarget.bid.value);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    mutation.mutate({ id: new Date(), count: 2 });
   }
 
   return (
@@ -48,10 +53,16 @@ function BidPage() {
       <h1>Logged in as Bidder</h1>
       <Player />
       <form onSubmit={handleOnSubmit} className="flex gap-1 text-white">
-        <label >
-          <input className="bg-slate-800 placeholder-gray-400 p-2" name="bid" placeholder="Enter a bid" />
+        <label>
+          <input
+            className="bg-slate-800 p-2 placeholder-gray-400"
+            name="bid"
+            placeholder="Enter a bid"
+          />
         </label>
-        <button className="rounded bg-slate-800 text-white p-2" type="submit">Submit Bid</button>
+        <button className="rounded bg-slate-800 p-2 text-white" type="submit">
+          Submit Bid
+        </button>
       </form>
     </div>
   );
@@ -59,6 +70,40 @@ function BidPage() {
 
 function Player({}) {
   return <div>Player Name: David Bobs</div>;
+}
+
+function Round() {
+  const mutation = useMutation({
+    mutationFn: () => {
+      return axios.post(`/api/round`, { id: new Date(), isCurrent: true });
+    },
+  });
+
+  // eslint-disable-next-line
+  const { isLoading, error, data } = useQuery({
+    queryKey: "round",
+    queryFn: () => fetch(`/api/round`).then((res) => res.json()),
+    refetchInterval: 1000,
+  });
+
+  console.log(data);
+
+  const getRound = () => {
+    if (!data || data.length === 0) return <p>No currentRound</p>;
+    return <p> currentRound: {data[0].number}</p>;
+  };
+
+  return (
+    <div>
+      {getRound()}
+      <button
+        className="rounded bg-slate-800 p-2 text-white"
+        onClick={() => mutation.mutate()}
+      >
+        Next Round
+      </button>
+    </div>
+  );
 }
 
 export default Home;
