@@ -1,10 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { useState } from "react";
 import { type NextPage } from "next";
 import Head from "next/head";
 import axios from "axios";
 import { useQuery, useMutation } from "react-query";
 
+/**
+ * 1. get current round id on load
+ * 2. poll to find out how many other people have bid
+ * 2. allow user to enter a bid
+ * 3. submit bid passing bid amount and current round id and user id
+ * 4. when poll returns all bids are in show all bids.
+ */
+
 const Home: NextPage = () => {
+  const [roundId, setRoundId] = useState<string>("");
   return (
     <>
       <Head>
@@ -13,39 +22,36 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Round />
+        <Round setRoundId={setRoundId} />
 
-        <BidPage />
+        {roundId && (
+          <>
+            <BidPage roundId={roundId} />
+
+            <RoundBids roundId={roundId} />
+          </>
+        )}
       </main>
     </>
   );
 };
 
-/**
- * 1. get current round id on load
- * 2. poll to find out how many other people have bid
- * 2. allow user to enter a bid
- * 3. submit bid passing bid amount and current round id and user id
- * 4. when poll returns all bids are in show all bids.
- * @returns
- */
-
-function BidPage() {
-  // const currentRoundId = 1;
-  // const myBid = 0;
-
+function BidPage({ roundId }: { roundId: string }) {
   const mutation = useMutation({
-    mutationFn: (newBid) => {
-      return axios.post(`/api/bidTracker?id=1`, newBid);
+    mutationFn: (newBid: { amount: string; user: string; roundId: string }) => {
+      return axios.post(`/api/bid`, newBid);
     },
   });
 
   function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    console.log("bid amount", e.currentTarget.bid.value);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    mutation.mutate({ id: new Date(), count: 2 });
+
+    mutation.mutate({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      amount: e.currentTarget.bid.value,
+      user: "laurie",
+      roundId,
+    });
   }
 
   return (
@@ -72,25 +78,66 @@ function Player({}) {
   return <div>Player Name: David Bobs</div>;
 }
 
-function Round() {
+type Bid = {
+  id: string;
+  amount: number;
+  user: string;
+  roundId: string;
+};
+
+function RoundBids({ roundId }: { roundId: string }) {
+  console.log("RoundBids: roundId", roundId);
+  const { isLoading, data } = useQuery<Bid[]>({
+    queryKey: "roundBids",
+    queryFn: () =>
+      fetch(`/api/bid?roundId=${roundId}`).then((res) => res.json()),
+    onError: (err) => console.log(err),
+  });
+  if (isLoading) return <p>Loading...</p>;
+  console.log(data);
+  return (
+    <div>
+      <h3>Bids for Round {roundId}</h3>
+      <ul>
+        {data?.map((bid) => (
+          <li key={bid.id}>
+            {bid.user} bid {bid.amount}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+type Round = {
+  id: string;
+  number: number;
+};
+function Round({ setRoundId }: { setRoundId: (id: string) => void }) {
   const mutation = useMutation({
     mutationFn: () => {
       return axios.post(`/api/round`, { id: new Date(), isCurrent: true });
     },
   });
 
-  // eslint-disable-next-line
-  const { isLoading, error, data } = useQuery({
+  const { isLoading, data } = useQuery<Round[]>({
     queryKey: "round",
     queryFn: () => fetch(`/api/round`).then((res) => res.json()),
-    refetchInterval: 1000,
+    refetchInterval: 1000000,
+    onError: (err) => console.log(err),
+    onSuccess(data: Round[]) {
+      if (data && data.length > 0) {
+        const currentRound = data[0] as Round;
+        setRoundId(currentRound.id);
+      }
+    },
   });
 
-  console.log(data);
-
   const getRound = () => {
+    if (isLoading) return <p>Loading...</p>;
     if (!data || data.length === 0) return <p>No currentRound</p>;
-    return <p> currentRound: {data[0].number}</p>;
+    const currentRound = data[0] as Round;
+    return <p> currentRound: {currentRound.number}</p>;
   };
 
   return (
@@ -100,7 +147,7 @@ function Round() {
         className="rounded bg-slate-800 p-2 text-white"
         onClick={() => mutation.mutate()}
       >
-        Next Round
+        New Round
       </button>
     </div>
   );
