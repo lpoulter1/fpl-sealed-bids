@@ -45,11 +45,10 @@ function BidPage({ roundId }: { roundId: string }) {
 
   function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
+    console.log('caaling mutation', e.currentTarget.amount, e.currentTarget.user, roundId)
     mutation.mutate({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      amount: e.currentTarget.bid.value,
-      user: "laurie",
+      amount: (e.currentTarget.amount as HTMLInputElement).value,
+      user: (e.currentTarget.user as HTMLInputElement).value,
       roundId,
     });
   }
@@ -62,7 +61,14 @@ function BidPage({ roundId }: { roundId: string }) {
         <label>
           <input
             className="bg-slate-800 p-2 placeholder-gray-400"
-            name="bid"
+            name="user"
+            placeholder="Your Name"
+          />
+        </label>
+        <label>
+          <input
+            className="bg-slate-800 p-2 placeholder-gray-400"
+            name="amount"
             placeholder="Enter a bid"
           />
         </label>
@@ -92,6 +98,7 @@ function RoundBids({ roundId }: { roundId: string }) {
     queryFn: () =>
       fetch(`/api/bid?roundId=${roundId}`).then((res) => res.json()),
     onError: (err) => console.log(err),
+    refetchInterval: 1000,
   });
   if (isLoading) return <p>Loading...</p>;
   console.log(data);
@@ -123,7 +130,6 @@ function Round({ setRoundId }: { setRoundId: (id: string) => void }) {
   const { isLoading, data } = useQuery<Round[]>({
     queryKey: "round",
     queryFn: () => fetch(`/api/round`).then((res) => res.json()),
-    refetchInterval: 1000000,
     onError: (err) => console.log(err),
     onSuccess(data: Round[]) {
       if (data && data.length > 0) {
