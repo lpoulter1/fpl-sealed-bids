@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint */
 import { type NextPage } from "next";
 import Head from "next/head";
 import dynamic from 'next/dynamic'
@@ -10,10 +9,13 @@ const AblyChatComponent = dynamic(() => import('../components/AblyChatComponent'
 const Home: NextPage = () => {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    fetch('/api/bidTracker').then(
+    void fetch('/api/bidTracker').then(
       (res) => res.json()
     ).then(
-      (data) => setCount(data.count)
+      (data: { count: number}) => {
+        if(!data) return;
+        setCount(data.count)
+      }
     );
   }, []);
 
