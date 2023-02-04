@@ -1,11 +1,22 @@
+/* eslint-disable @typescript-eslint */
 import { type NextPage } from "next";
 import Head from "next/head";
 import dynamic from 'next/dynamic'
+import { useEffect, useState } from "react";
 
 const AblyChatComponent = dynamic(() => import('../components/AblyChatComponent'), { ssr: false });
 
 
 const Home: NextPage = () => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    fetch('/api/bidTracker').then(
+      (res) => res.json()
+    ).then(
+      (data) => setCount(data.count)
+    );
+  }, []);
+
   return (
     <>
       <Head>
@@ -14,8 +25,10 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        count: {count}
         <BidPage />
         <AblyChatComponent />
+
       </main>
     </>
   );

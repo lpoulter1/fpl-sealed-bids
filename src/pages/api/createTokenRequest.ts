@@ -1,9 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import * as Ably from "ably";
 
-type ResponseData = {
-  error?: string;
-} | Ably.Types.TokenRequest;
+type ResponseData =
+  | {
+      error?: string;
+    }
+  | Ably.Types.TokenRequest;
 
 export default function handler(
   req: NextApiRequest,
