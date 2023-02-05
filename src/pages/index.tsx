@@ -97,6 +97,7 @@ function BidPage({ roundId }: { roundId: string }) {
 type Player = {
   id: string;
   web_name: string;
+  code: number;
 };
 
 function Player() {
@@ -111,7 +112,7 @@ function Player() {
   if (!players) return <p>No player</p>;
   if (players.length === 0) return <p>No player</p>;
   console.log("players", players);
-  const randomPlayer = players[Math.floor(Math.random() * players.length)];
+  const randomPlayer = players[Math.floor(Math.random() * players.length)] as Player;
   return (
     <div>
       Bidding on Player Name: {randomPlayer.web_name}
