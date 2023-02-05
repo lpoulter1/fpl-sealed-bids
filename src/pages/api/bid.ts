@@ -39,11 +39,11 @@ export default async function handler(
       const unqiueBidCount = countUserBids(allBids);
 
       if (unqiueBidCount > 4) {
-        res.status(200).json(allBids);
+        return res.status(200).json(allBids);
       }
 
       const bidsWithoutAmount = allBids.map((bid) => exclude(bid, ["amount"]));
-      res.status(200).json(bidsWithoutAmount);
+      return res.status(200).json(bidsWithoutAmount);
     }
   }
 }
@@ -61,6 +61,6 @@ function exclude<User, Key extends keyof User>(
 function countUserBids(bids: Bid[]) {
   let userSet = new Set();
   bids.forEach((bid) => userSet.add(bid.user));
-  
+
   return userSet.size;
 }
