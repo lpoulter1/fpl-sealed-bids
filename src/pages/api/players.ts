@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-type Player = {
+export type Player = {
   id: number;
   first_name: string;
   second_name: string;
@@ -68,7 +68,7 @@ export default async function handler(
     "https://fantasy.premierleague.com/api/bootstrap-static/"
   );
 
-  const json = await response.json() as BootstrapResponse;
+  const json = (await response.json()) as BootstrapResponse;
   const players = json.elements;
   res.status(200).json(players);
 }
