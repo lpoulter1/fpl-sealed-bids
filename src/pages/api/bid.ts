@@ -1,3 +1,4 @@
+import { Bid } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../server/db";
 /* eslint-disable */
@@ -25,7 +26,7 @@ export default async function handler(
     }
     case "GET": {
       // get all bids for a round
-      console.log("req.query", req.query)
+      console.log("req.query", req.query);
       const { roundId } = req.query;
       if (!roundId) return res.status(400).json({ error: "Missing roundId" });
       if (typeof roundId !== "string")
@@ -34,7 +35,32 @@ export default async function handler(
       const allBids = await prisma.bid.findMany({
         where: { roundId: roundId },
       });
-      res.status(200).json(allBids);
+
+      const unqiueBidCount = countUserBids(allBids);
+
+      if (unqiueBidCount > 4) {
+        res.status(200).json(allBids);
+      }
+
+      const bidsWithoutAmount = allBids.map((bid) => exclude(bid, ["amount"]));
+      res.status(200).json(bidsWithoutAmount);
     }
   }
+}
+
+function exclude<User, Key extends keyof User>(
+  user: User,
+  keys: Key[]
+): Omit<User, Key> {
+  for (let key of keys) {
+    delete user[key];
+  }
+  return user;
+}
+
+function countUserBids(bids: Bid[]) {
+  let userSet = new Set();
+  bids.forEach((bid) => userSet.add(bid.user));
+  
+  return userSet.size;
 }

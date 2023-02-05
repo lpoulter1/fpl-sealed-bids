@@ -129,7 +129,7 @@ function RoundBids({ roundId }: { roundId: string }) {
 
   return (
     <div>
-      <h3>Bids for Round {roundId}</h3>
+      <h3>Bids for Round</h3>
       <ul>
         {data?.map((bid) => (
           <li key={bid.id}>
