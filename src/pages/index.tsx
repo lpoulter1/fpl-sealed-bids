@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { type NextPage } from "next";
+import Image from "next/image";
 import Head from "next/head";
 import axios from "axios";
 import { useQuery, useMutation } from "react-query";
@@ -93,8 +94,35 @@ function BidPage({ roundId }: { roundId: string }) {
   );
 }
 
-function Player({}) {
-  return <div>Player Name: David Bobs</div>;
+type Player = {
+  id: string;
+  web_name: string;
+};
+
+function Player() {
+  const { isLoading, data: players } = useQuery<Player[]>({
+    queryKey: "players",
+    queryFn: () => fetch(`/api/players`).then((res) => res.json()),
+    onError: (err) => console.log(err),
+    staleTime: Infinity,
+  });
+
+  if (isLoading) return <p>Loading...</p>;
+  if (!players) return <p>No player</p>;
+  if (players.length === 0) return <p>No player</p>;
+  console.log("players", players);
+  const randomPlayer = players[Math.floor(Math.random() * players.length)];
+  return (
+    <div>
+      Bidding on Player Name: {randomPlayer.web_name}
+      <img
+        src={`https://resources.premierleague.com/premierleague/photos/players/110x140/p${randomPlayer.code}.png`}
+        alt="a nice face"
+        width={100}
+        height={100}
+      />
+    </div>
+  );
 }
 
 type Bid = {
