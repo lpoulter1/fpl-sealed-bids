@@ -69,7 +69,6 @@ function BidPage({ roundId }: { roundId: string }) {
 
   return (
     <div className="App">
-      <h1>Logged in as Bidder</h1>
       <Player />
       <form onSubmit={handleOnSubmit} className="flex gap-1 text-white">
         <label>
