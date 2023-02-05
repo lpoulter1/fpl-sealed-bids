@@ -13,7 +13,17 @@ import { useQuery, useMutation } from "react-query";
  */
 
 const Home: NextPage = () => {
-  const [roundId, setRoundId] = useState<string>("");
+  const { isLoading, data: currentRound } = useQuery<Round>({
+    queryKey: "round",
+    queryFn: () => fetch(`/api/round`).then((res) => res.json()),
+    onError: (err) => console.log(err),
+  });
+
+  const getRound = () => {
+    if (isLoading) return <p>Loading...</p>;
+    if (!currentRound) return <p>No currentRound</p>;
+    return <p> currentRound: {currentRound.number}</p>;
+  };
   return (
     <>
       <Head>
@@ -22,13 +32,12 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Round setRoundId={setRoundId} />
-
-        {roundId && (
+        {getRound()}
+        {currentRound && (
           <>
-            <BidPage roundId={roundId} />
+            <BidPage roundId={currentRound.id} />
 
-            <RoundBids roundId={roundId} />
+            <RoundBids roundId={currentRound.id} />
           </>
         )}
       </main>
@@ -45,7 +54,12 @@ function BidPage({ roundId }: { roundId: string }) {
 
   function handleOnSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log('caaling mutation', e.currentTarget.amount, e.currentTarget.user, roundId)
+    console.log(
+      "caaling mutation",
+      e.currentTarget.amount,
+      e.currentTarget.user,
+      roundId
+    );
     mutation.mutate({
       amount: (e.currentTarget.amount as HTMLInputElement).value,
       user: (e.currentTarget.user as HTMLInputElement).value,

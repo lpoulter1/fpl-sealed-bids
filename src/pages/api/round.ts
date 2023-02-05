@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../server/db";
 /* eslint-disable */
-type ResponseData = {} | null;
+type ResponseData = {} | null | undefined;
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,6 +9,10 @@ export default async function handler(
 ) {
   const { method } = req;
   const currentRound = await getCurrentRound();
+  if (currentRound.length > 1) {
+    res.status(500).json({ error: "More than one current round" });
+  }
+
   const allRounds = prisma.round.findMany();
 
   console.log("latestRound", currentRound);
@@ -24,7 +28,7 @@ export default async function handler(
       res.status(200).json(bidCount);
       break;
     case "GET":
-      res.status(200).json(currentRound);
+      res.status(200).json(currentRound[0]);
       break;
   }
 }
@@ -43,6 +47,5 @@ function resetCurrentRounds() {
 function getCurrentRound() {
   return prisma.round.findMany({
     where: { isCurrent: true },
-    take: -1,
   });
 }
