@@ -11,8 +11,8 @@ export function CurrentPlayerCard({ player }: { player: Player }) {
       <Image
         src={`${player?.playerId}`}
         loader={loader}
-        width={110}
-        height={140}
+        width={125}
+        height={160}
         className="rounded-full"
         alt="a nice face"
       />
