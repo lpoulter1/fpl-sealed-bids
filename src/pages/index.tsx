@@ -45,7 +45,6 @@ const Home: NextPage = () => {
           )}
         </>
       </main>
-      <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vScXgOGg-l5p0SCEQwbllQ3PhCM4kmIko3HccpxEt4LFsg-331YPOv9oeQ84kBulfuw8VK9y-FdC1v8/pubhtml?gid=1073624568&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
     </>
   );
 };
