@@ -14,7 +14,7 @@ export function CurrentPlayerCard({
   };
 
   return (
-    <div className="flex max-w-xs flex-col items-center justify-center overflow-hidden rounded bg-blue-300 pt-3 pl-6 pr-6 shadow-sm shadow-orange-700">
+    <div className="flex max-w-xs flex-col items-center justify-center rounded bg-blue-300 pt-3 pl-6 pr-6 shadow-sm shadow-orange-500">
       {isSold && <span className={styles.stamp}>Sold</span>}
       <Image
         src={`${player?.playerId}`}
