@@ -115,7 +115,7 @@ function BidPage({ roundId }: { roundId: string }) {
           />
         </label>
         <button
-          className="mt-2 rounded bg-slate-800 p-6  text-white focus-visible:outline-none focus-visible:outline-orange-500 rounded-xl"
+          className="mt-2 bg-slate-800 p-6  text-white focus-visible:outline-none focus-visible:outline-orange-500 rounded-xl hover:opacity-80"
           type="submit"
         >
           Submit Bid

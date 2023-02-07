@@ -13,7 +13,7 @@ export function CurrentPlayerCard({ player }: { player: Player }) {
         loader={loader}
         width={125}
         height={160}
-        className="rounded-full"
+        className="rounded-full animate-[wiggle_1s_ease-in-out_infinite]"
         alt="a nice face"
       />
       <p className="m-3 text-xl text-white">{player?.web_name}</p>
