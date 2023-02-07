@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect} from "react";
 import { type NextPage } from "next";
 import Head from "next/head";
 import axios from "axios";
@@ -16,6 +16,15 @@ import type { Player } from "../types";
 
 const Home: NextPage = () => {
   const [isSold, setIsSold] = useState(false);
+  const audioRef = useRef();
+
+  useEffect(() => {
+    if (!audioRef.current) return;
+    if (!isSold) return;
+    const audio = audioRef.current as HTMLAudioElement;
+    audio.play();
+  }, [isSold]);
+
   const { isLoading, data: currentRound } = useQuery<Round>({
     queryKey: "round",
     queryFn: () => fetch(`/api/round`).then((res) => res.json()),
@@ -38,6 +47,10 @@ const Home: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <audio ref={audioRef} src="/resources/horn.mp3">
+        Your browser does not support the
+        <code>audio</code> element.
+      </audio>
       <div className="flex flex-col gap-8 bg-gray-900  p-8 text-white md:flex-row md:gap-16">
         <main className="flex justify-center">
           <>
