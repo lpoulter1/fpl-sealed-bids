@@ -15,6 +15,7 @@ import type { Player } from "../types";
  */
 
 const Home: NextPage = () => {
+  const [isSold, setIsSold] = useState(false);
   const { isLoading, data: currentRound } = useQuery<Round>({
     queryKey: "round",
     queryFn: () => fetch(`/api/round`).then((res) => res.json()),
@@ -43,9 +44,9 @@ const Home: NextPage = () => {
             {getRound()}
             {currentRound && (
               <div className="mobile:w-full w-96">
-                <BidPage roundId={currentRound.id} />
+                <BidPage roundId={currentRound.id} isSold={isSold} />
 
-                <RoundBids roundId={currentRound.id} />
+                <RoundBids roundId={currentRound.id} setIsSold={setIsSold} />
               </div>
             )}
           </>
@@ -62,7 +63,7 @@ const Home: NextPage = () => {
   );
 };
 
-function BidPage({ roundId }: { roundId: string }) {
+function BidPage({ roundId, isSold }: { roundId: string }) {
   const { isLoading: isCurrentPlayerLoading, data: currentPlayer } =
     useQuery<Player>({
       queryKey: "currentPlayer",
@@ -96,7 +97,7 @@ function BidPage({ roundId }: { roundId: string }) {
   return (
     <div className="flex max-w-lg flex-col">
       <div className="flex justify-center">
-        <CurrentPlayerCard player={currentPlayer.data} />
+        <CurrentPlayerCard player={currentPlayer.data} isSold={isSold} />
       </div>
 
       <form
@@ -140,12 +141,17 @@ type Bid = {
   roundId: string;
 };
 
-function RoundBids({ roundId }: { roundId: string }) {
+function RoundBids({ roundId, setIsSold }: { roundId: string }) {
   const { isLoading, data } = useQuery<Bid[]>({
     queryKey: "roundBids",
     queryFn: () =>
       fetch(`/api/bid?roundId=${roundId}`).then((res) => res.json()),
     onError: (err) => console.log(err),
+    onSuccess: (data) => {
+      if (typeof data[0]?.amount !== "undefined") {
+        setIsSold(true);
+      }
+    },
     refetchInterval: 1000,
   });
   if (isLoading) return <p>Loading...</p>;
