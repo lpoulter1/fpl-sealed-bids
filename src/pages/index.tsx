@@ -22,6 +22,13 @@ const Home: NextPage = () => {
     if (!audioRef.current) return;
     if (!isSold) return;
     const audio = audioRef.current as HTMLAudioElement;
+    const randomNum = Math.floor(Math.random() * 2);
+    if (randomNum === 0) {
+      audioRef.current.src = "/resources/sadtrombone.mp3";
+    } else {
+      audioRef.current.src = "/resources/horn.mp3";
+    }
+
     audio.play();
   }, [isSold]);
 
