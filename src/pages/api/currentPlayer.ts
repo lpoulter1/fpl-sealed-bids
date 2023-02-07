@@ -29,7 +29,7 @@ export default async function handler(
       const { playerId, web_name } = req.body;
 
       const player = await prisma.currentPlayer.create({
-        data: { playerId: playerId, web_name: web_name },
+        data: { playerId: playerId, web_name: web_nam, element_type: 'test' },
       });
 
       res.status(200).json(player);
