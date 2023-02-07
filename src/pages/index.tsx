@@ -110,6 +110,8 @@ function BidPage({ roundId }: { roundId: string }) {
             placeholder="Enter a bid"
             required
             type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
           />
         </label>
         <button
