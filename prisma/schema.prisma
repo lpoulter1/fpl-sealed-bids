@@ -90,4 +90,5 @@ model CurrentPlayer {
   updatedAt DateTime @updatedAt
   playerId  Int
   web_name  String
+  element_type String
 }
