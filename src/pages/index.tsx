@@ -53,7 +53,8 @@ const Home: NextPage = () => {
         </main>
         <div className="h-screen">
           <iframe
-            width={1200}
+            key={isSold}
+            width={1337}
             height="100%"
             src="https://docs.google.com/spreadsheets/d/e/2PACX-1vScXgOGg-l5p0SCEQwbllQ3PhCM4kmIko3HccpxEt4LFsg-331YPOv9oeQ84kBulfuw8VK9y-FdC1v8/pubhtml?gid=1073624568&amp;single=true&amp;widget=true&amp;headers=false"
           />
@@ -150,6 +151,8 @@ function RoundBids({ roundId, setIsSold }: { roundId: string }) {
     onSuccess: (data) => {
       if (typeof data[0]?.amount !== "undefined") {
         setIsSold(true);
+      } else {
+        setIsSold(false);
       }
     },
     refetchInterval: 1000,
