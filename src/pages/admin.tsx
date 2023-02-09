@@ -22,8 +22,8 @@ export default function Round() {
   });
 
   const playerMutation = useMutation<Player>({
-    mutationFn: ({ code, web_name }) => {
-      return axios.post(`/api/currentPlayer`, { playerId: code, web_name });
+    mutationFn: ({ code, web_name, element_type }) => {
+      return axios.post(`/api/currentPlayer`, { playerId: code, web_name, element_type });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["currentPlayer"] });
@@ -83,7 +83,7 @@ export default function Round() {
       <div>
         <Select
           options={options}
-          onChange={({ value: player, label: web_name }) => {
+          onChange={({ value: player, label: web_name, element_type }) => {
             console.log("select player", player);
             playerMutation.mutate(player);
           }}
