@@ -3,5 +3,6 @@ export type Player = {
     web_name: string;
     code: number;
     playerId: number;
+    element_type: number,
   };
   

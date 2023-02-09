@@ -11,7 +11,7 @@ type CurrentPlayer =
   | {
       playerId: number;
       web_name: string;
-      element_type: string;
+      element_type: number;
     }
   | { message: string }
   | undefined;
@@ -32,7 +32,7 @@ export default async function handler(
       }
 
       const player = await prisma.currentPlayer.create({
-        data: { playerId: playerId, web_name: web_name, element_type: "test" },
+        data: { playerId: playerId, web_name: web_name, element_type: element_type },
       });
 
       res.status(200).json(player);
