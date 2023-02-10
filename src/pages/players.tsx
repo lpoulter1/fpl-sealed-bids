@@ -4,6 +4,7 @@ type Player = {
   second_name: string;
   web_name: string;
   team: number;
+  team_code: number;
   element_type: number;
   now_cost: number;
   news: string;
@@ -38,7 +39,9 @@ type Player = {
   goals_scored: number;
   assists: number;
   clean_sheets: number;
+  clean_sheets_per_90: number;
   goals_conceded: number;
+  goals_conceded_per_90: number;
   own_goals: number;
   penalties_saved: number;
   penalties_missed: number;
@@ -51,7 +54,18 @@ type Player = {
   creativity: number;
   threat: number;
   ict_index: number;
-  ea_index: number;
+  expected_goals_conceded: string;
+  expected_goals_conceded_per_90: number;
+  corners_and_indirect_freekicks_text: string;
+  corners_and_indirect_freekicks_order: number;
+  direct_freekicks_order: number;
+  direct_freekicks_text: string;
+  expected_assists: string;
+  expected_assists_per_90: number;
+  expected_goal_involvements: string;
+  expected_goal_involvements_per_90: number;
+  expected_goals: number;
+  starts: number;
 };
 
 type JSONResponse = {
@@ -81,43 +95,34 @@ function getPosition(element_type: number) {
 function Page({ players }: Props) {
   return (
     <table className="table-auto  text-center">
-      <thead className="bg-gray-50 text-sm border-b">
+      <thead className="bg-gray-50 text-xs border-b">
         <tr>
           <th>Player</th>
-          <th>Team</th>
           <th>Position</th>
-          <th>Cost</th>
+          <th>Team</th>
+          <th>Total points</th>
+          
           <th>News</th>
           <th>Chance of playing this round</th>
           <th>Chance of playing next round</th>
-          <th>Value form</th>
-          <th>Value season</th>
-          <th>Cost change start</th>
-          <th>Cost change event</th>
-          <th>Cost change start fall</th>
-          <th>Cost change event fall</th>
-          <th>In dreamteam</th>
-          <th>Dreamteam count</th>
-          <th>Selected by percent</th>
-          <th>Form</th>
-          <th>Transfers out</th>
-          <th>Transfers in</th>
-          <th>Transfers out event</th>
-          <th>Transfers in event</th>
-          <th>Loans in</th>
-          <th>Loans out</th>
-          <th>Loaned in</th>
-          <th>Loaned out</th>
-          <th>Total points</th>
-          <th>Event points</th>
-          <th>Points per game</th>
           <th>Ep this</th>
           <th>Ep next</th>
-          <th>Special</th>
+
+          <th>Value form</th>
+          <th>Value season</th>
+          <th>Selected by percent</th>
+          <th>Form</th>
+
+          <th>Event points</th>
+          <th>Points per game</th>
+
+          <th>Starts</th>
           <th>Minutes</th>
+
           <th>Goals scored</th>
           <th>Assists</th>
           <th>Clean sheets</th>
+          <th>Clean sheets p/90</th>
           <th>Goals conceded</th>
           <th>Own goals</th>
           <th>Penalties saved</th>
@@ -127,51 +132,54 @@ function Page({ players }: Props) {
           <th>Saves</th>
           <th>Bonus</th>
           <th>Bps</th>
+
           <th>Influence</th>
           <th>Creativity</th>
           <th>Threat</th>
-          <th>Ict index</th>
-          <th>Ea index</th>              
+          <th>Ict index</th>   
+
+          <th>expected_goals_conceded</th>            
+          <th>corners_and_indirect_freekicks_text</th>            
+          <th>corners_and_indirect_freekicks_order</th>            
+          <th>direct_freekicks_order</th>   
+          <th>direct_freekicks_order</th>
+          <th>direct_freekicks_text</th>
+          <th>expected_assists</th>
+          <th>expected_assists_per_90</th>
+          <th>expected_goal_involvements</th>
+          <th>expected_goal_involvements_per_90</th>
+          <th>expected_goals</th>
         </tr>
       </thead>
       <tbody>
         {players.map((player) => (
           <tr key={player.id}>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.web_name}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.first_name} {player.second_name} ({player.web_name})</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.team}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{getPosition(player.element_type)}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.now_cost}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.total_points}</td>
+
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.news}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.chance_of_playing_this_round}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.chance_of_playing_next_round}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.value_form}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.value_season}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.cost_change_start}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.cost_change_event}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.cost_change_start_fall}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.cost_change_event_fall}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.in_dreamteam}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.dreamteam_count}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.selected_by_percent}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.form}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.transfers_out}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.transfers_in}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.transfers_out_event}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.transfers_in_event}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.loans_in}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.loans_out}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.loaned_in}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.loaned_out}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.total_points}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.event_points}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.points_per_game}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.ep_this}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.ep_next}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.special}</td>
+
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.value_form}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.value_season}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.selected_by_percent}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.form}</td>
+            
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.event_points}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.points_per_game}</td>
+         
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.starts}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.minutes}</td>
+
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.goals_scored}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.assists}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.clean_sheets}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.clean_sheets_per_90}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.goals_conceded}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.own_goals}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.penalties_saved}</td>
@@ -181,11 +189,24 @@ function Page({ players }: Props) {
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.saves}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.bonus}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.bps}</td>
+
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.influence}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.creativity}</td>
             <td className="px-6 py-3 border-b text-xs text-grey-900">{player.threat}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.ict_index}</td>
-            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.ea_index}</td>           
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.ict_index}</td>    
+       
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.expected_goals_conceded}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.corners_and_indirect_freekicks_text}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.corners_and_indirect_freekicks_order}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.direct_freekicks_order}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.direct_freekicks_order}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.direct_freekicks_text}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.expected_assists}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.expected_assists_per_90}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.expected_goal_involvements}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.expected_goal_involvements_per_90}</td>
+            <td className="px-6 py-3 border-b text-xs text-grey-900">{player.expected_goals}</td>
+            
           </tr>
         ))}
       </tbody>
