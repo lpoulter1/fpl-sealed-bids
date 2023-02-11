@@ -1,5 +1,12 @@
 import React from "react";
-import { useTable } from "react-table";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
 
 type Player = {
   id: number;
@@ -96,176 +103,211 @@ function getPosition(element_type: number) {
 }
 
 function Page({ players }: Props) {
-  // all columns
-  const columns = React.useMemo(
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  const columns = React.useMemo<ColumnDef<Player>[]>(
     () => [
       {
-        Header: "Player",
-        accessor: "web_name",
+        header: "Player",
+        accessorKey: "web_name",
       },
       {
-        Header: "Position",
-        accessor: "element_type",
-        Cell: ({ value }) => getPosition(value),
+        header: "Position",
+        accessorKey: "element_type",
+        Cell: ({ value }: { value: number }) => getPosition(value),
       },
       {
-        Header: "Team",
-        accessor: "team",
+        header: "Team",
+        accessorKey: "team",
       },
       {
-        Header: "Total points",
-        accessor: "total_points",
+        header: "Total points",
+        accessorKey: "total_points",
       },
       {
-        Header: "News",
-        accessor: "news",
+        header: "News",
+        accessorKey: "news",
       },
       {
-        Header: "Chance of playing this round",
-        accessor: "chance_of_playing_this_round",
+        header: "Chance of playing this round",
+        accessorKey: "chance_of_playing_this_round",
       },
       {
-        Header: "Chance of playing next round",
-        accessor: "chance_of_playing_next_round",
+        header: "Chance of playing next round",
+        accessorKey: "chance_of_playing_next_round",
       },
       {
-        Header: "Ep this",
-        accessor: "ep_this",
+        header: "Ep this",
+        accessorKey: "ep_this",
       },
       {
-        Header: "Ep next",
-        accessor: "ep_next",
+        header: "Ep next",
+        accessorKey: "ep_next",
       },
       {
-        Header: "Value form",
-        accessor: "value_form",
+        header: "Value form",
+        accessorKey: "value_form",
       },
 
       {
-        Header: "Value season",
-        accessor: "value_season",
+        header: "Value season",
+        accessorKey: "value_season",
       },
       {
-        Header: "Selected by percent",
-        accessor: "selected_by_percent",
+        header: "Selected by percent",
+        accessorKey: "selected_by_percent",
       },
       {
-        Header: "Form",
-        accessor: "form",
+        header: "Form",
+        accessorKey: "form",
       },
       {
-        Header: "Event points",
-        accessor: "event_points",
+        header: "Event points",
+        accessorKey: "event_points",
       },
       {
-        Header: "Points per game",
-        accessor: "points_per_game",
+        header: "Points per game",
+        accessorKey: "points_per_game",
       },
       {
-        Header: "Starts",
-        accessor: "starts",
+        header: "Starts",
+        accessorKey: "starts",
       },
       {
-        Header: "Minutes",
-        accessor: "minutes",
+        header: "Minutes",
+        accessorKey: "minutes",
       },
       {
-        Header: "Goals scored",
-        accessor: "goals_scored",
+        header: "Goals scored",
+        accessorKey: "goals_scored",
       },
       {
-        Header: "Assists",
-        accessor: "assists",
+        header: "Assists",
+        accessorKey: "assists",
       },
       {
-        Header: "Clean sheets",
-        accessor: "clean_sheets",
+        header: "Clean sheets",
+        accessorKey: "clean_sheets",
       },
-      { Header: "Clean sheets p/90", accessor: "clean_sheets_per_90" },
-      { Header: "Goals conceded", accessor: "goals_conceded" },
-      { Header: "Own goals", accessor: "own_goals" },
-      { Header: "Penalties saved", accessor: "penalties_saved" },
-      { Header: "Penalties missed", accessor: "penalties_missed" },
-      { Header: "Yellow cards", accessor: "yellow_cards" },
-      { Header: "Red cards", accessor: "red_cards" },
-      { Header: "Saves", accessor: "saves" },
-      { Header: "Bonus", accessor: "bonus" },
-      { Header: "Bps", accessor: "bps" },
+      { header: "Clean sheets p/90", accessorKey: "clean_sheets_per_90" },
+      { header: "Goals conceded", accessorKey: "goals_conceded" },
+      { header: "Own goals", accessorKey: "own_goals" },
+      { header: "Penalties saved", accessorKey: "penalties_saved" },
+      { header: "Penalties missed", accessorKey: "penalties_missed" },
+      { header: "Yellow cards", accessorKey: "yellow_cards" },
+      { header: "Red cards", accessorKey: "red_cards" },
+      { header: "Saves", accessorKey: "saves" },
+      { header: "Bonus", accessorKey: "bonus" },
+      { header: "Bps", accessorKey: "bps" },
 
-      { Header: "Influence", accessor: "influence" },
-      { Header: "Creativity", accessor: "creativity" },
-      { Header: "Threat", accessor: "threat" },
-      { Header: "Ict index</t", accessor: "ict_index" },
+      { header: "Influence", accessorKey: "influence" },
+      { header: "Creativity", accessorKey: "creativity" },
+      { header: "Threat", accessorKey: "threat" },
+      { header: "Ict index</t", accessorKey: "ict_index" },
 
       {
-        Header: "expected_goals_conceded",
-        accessor: "expected_goals_conceded",
+        header: "expected_goals_conceded",
+        accessorKey: "expected_goals_conceded",
       },
       {
-        Header: "corners_and_indirect_freekicks_text",
-        accessor: "corners_and_indirect_freekicks_text",
+        header: "corners_and_indirect_freekicks_text",
+        accessorKey: "corners_and_indirect_freekicks_text",
       },
       {
-        Header: "corners_and_indirect_freekicks_order",
-        accessor: "corners_and_indirect_freekicks_order",
+        header: "corners_and_indirect_freekicks_order",
+        accessorKey: "corners_and_indirect_freekicks_order",
       },
       {
-        Header: "direct_freekicks_order",
-        accessor: "direct_freekicks_order",
+        header: "direct_freekicks_order",
+        accessorKey: "direct_freekicks_order",
       },
-      { Header: "direct_freekicks_text", accessor: "direct_freekicks_text" },
-      { Header: "expected_assists", accessor: "expected_assists" },
+      { header: "direct_freekicks_text", accessorKey: "direct_freekicks_text" },
+      { header: "expected_assists", accessorKey: "expected_assists" },
       {
-        Header: "expected_assists_per_90",
-        accessor: "expected_assists_per_90",
-      },
-      {
-        Header: "expected_goal_involvements",
-        accessor: "expected_goal_involvements",
+        header: "expected_assists_per_90",
+        accessorKey: "expected_assists_per_90",
       },
       {
-        Header: "expected_goal_involvements_per_90",
-        accessor: "expected_goal_involvements_per_90",
+        header: "expected_goal_involvements",
+        accessorKey: "expected_goal_involvements",
       },
-      { Header: "expected_goals", accessor: "expected_goals" },
+      {
+        header: "expected_goal_involvements_per_90",
+        accessorKey: "expected_goal_involvements_per_90",
+      },
+      { header: "expected_goals", accessorKey: "expected_goals" },
     ],
     []
   );
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({
-      columns,
-      data: players,
-    });
+
+  const table = useReactTable({
+    data: players,
+    columns,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    debugTable: true,
+  });
 
   return (
-    <table {...getTableProps()} className="table-auto  text-center">
+    <table className="table-auto  text-center">
       <thead className="border-b bg-gray-50 text-xs">
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-            ))}
+        {table.getHeaderGroups().map((headerGroup) => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map((header) => {
+              return (
+                <th key={header.id} colSpan={header.colSpan}>
+                  {header.isPlaceholder ? null : (
+                    <div
+                      {...{
+                        className: header.column.getCanSort()
+                          ? "cursor-pointer select-none"
+                          : "",
+                        onClick: header.column.getToggleSortingHandler(),
+                      }}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {{
+                        asc: " 🔼",
+                        desc: " 🔽",
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  )}
+                </th>
+              );
+            })}
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row, i) => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map((cell) => {
-                return (
-                  <td
-                    {...cell.getCellProps()}
-                    className="text-grey-900 border-b px-6 py-3 text-xs"
-                  >
-                    {cell.render("Cell")}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
+      <tbody>
+        {table
+          .getRowModel()
+          .rows.slice(0, 10)
+          .map((row) => {
+            return (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => {
+                  return (
+                    <td
+                      key={cell.id}
+                      className="text-grey-900 border-b px-6 py-3 text-xs"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
       </tbody>
     </table>
   );
